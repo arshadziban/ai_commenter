@@ -27,6 +27,9 @@ supabase/.temp/
 Thumbs.db
 .DS_Store
 
+# Extension
+extension/
+
 # Logs
 logs/
 *.log
