@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://cizrnlwfmyceauqyqlcb.supabase.co/functions/v1/generate-comment";
+const BACKEND_URL = "http://localhost:5000/generate";
 
 let currentCommentBox = null;
 let currentPost = null;
