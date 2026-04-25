@@ -39,9 +39,6 @@ npm install
 ```bash
 node server.js
 ```
-
-The backend runs on http://localhost:5000 and exposes a `POST /generate` endpoint.
-
 ## Extension Setup
 
 1. Open Chrome or Edge and go to `chrome://extensions/`.
@@ -57,22 +54,9 @@ The backend runs on http://localhost:5000 and exposes a `POST /generate` endpoin
 4. Use the AI Comment button to choose Professional or Friendly.
 5. Copy the generated comment and paste it into LinkedIn.
 
-## Configuration
-
-The backend expects an OpenRouter API key in its environment configuration. If the key is missing, comment generation will fail.
-
-The extension sends requests to:
-
-```text
-http://localhost:5000/generate
-```
 
 ## Troubleshooting
 
 - If no button appears, refresh LinkedIn after loading the extension.
 - If generation fails, confirm the backend server is running on port 5000.
 - If the backend returns an error, verify the OpenRouter API key is configured correctly.
-
-## License
-
-No license has been specified for this repository.
