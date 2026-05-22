@@ -1,4 +1,5 @@
 //const BACKEND_URL = "http://localhost:3000/generate";
+
 let currentCommentBox = null;
 let currentPost = null;
 let aiButton = null;
@@ -762,28 +763,75 @@ function showComment(post, comment, type) {
     align-items: center;
   `;
 
-  const copyBtn = document.createElement("button");
-  copyBtn.className = "ai-copy-btn";
-  copyBtn.innerHTML = "Copy";
-  copyBtn.style.background = color;
-  copyBtn.onclick = (e) => {
+  const sendBtn = document.createElement("button");
+  sendBtn.className = "ai-send-btn";
+  const img = document.createElement("img");
+  img.src = chrome.runtime.getURL("up_arrow.png");
+  img.style.cssText = `
+    width: 18px;
+    height: 18px;
+  `;
+  sendBtn.appendChild(img);
+  sendBtn.title = "Send to comment box";
+  sendBtn.style.cssText = `
+    background: ${color};
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  `;
+  sendBtn.onmouseover = () => {
+    sendBtn.style.transform = "translateY(-1px)";
+    sendBtn.style.boxShadow = "0 3px 8px rgba(0, 0, 0, 0.15)";
+  };
+  sendBtn.onmouseout = () => {
+    sendBtn.style.transform = "translateY(0)";
+    sendBtn.style.boxShadow = "none";
+  };
+  sendBtn.onclick = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent click from bubbling up
+    e.stopPropagation();
     e.stopImmediatePropagation();
-    navigator.clipboard.writeText(comment);
-    copyBtn.innerHTML = "✓ Copied!";
     
-    // Automatically remove the container after copying
-    setTimeout(() => {
-      container.remove();
-      
-      // Keep button visible so user can generate another comment
-      // Don't reset aiButton, currentCommentBox, or currentPost
-    }, 500); // Short delay to show "Copied!" feedback
+    if (!currentCommentBox) {
+      alert("Comment box not found");
+      return;
+    }
+    
+    // Set the comment text in the comment box
+    if (currentCommentBox.tagName === 'TEXTAREA') {
+      currentCommentBox.value = comment;
+      currentCommentBox.dispatchEvent(new Event('input', { bubbles: true }));
+      currentCommentBox.dispatchEvent(new Event('change', { bubbles: true }));
+    } else if (currentCommentBox.contentEditable === 'true' || currentCommentBox.getAttribute('contenteditable') === 'true') {
+      currentCommentBox.textContent = comment;
+      currentCommentBox.innerText = comment;
+      currentCommentBox.dispatchEvent(new Event('input', { bubbles: true }));
+      currentCommentBox.dispatchEvent(new Event('change', { bubbles: true }));
+    } else if (currentCommentBox.tagName === 'INPUT') {
+      currentCommentBox.value = comment;
+      currentCommentBox.dispatchEvent(new Event('input', { bubbles: true }));
+      currentCommentBox.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // Focus the comment box
+    currentCommentBox.focus();
+    
+    // Remove the result container
+    container.remove();
+    
+    console.log("Comment sent to comment box:", comment);
   };
 
   box.appendChild(text);
-  buttonContainer.appendChild(copyBtn);
+  buttonContainer.appendChild(sendBtn);
   box.appendChild(buttonContainer);
   section.appendChild(box);
   container.appendChild(section);

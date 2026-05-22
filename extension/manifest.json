@@ -16,5 +16,11 @@
       "js": ["content.js"],
       "css": ["styles.css"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["up_arrow.png", "icon.png"],
+      "matches": ["https://www.linkedin.com/*"]
+    }
   ]
 }
