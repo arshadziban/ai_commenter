@@ -1,5 +1,23 @@
-.ai-comment-btn-inline {
-  /* Styles are applied inline in JavaScript */
+.ai-comment-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #bdbdbd transparent;
+}
+
+.ai-comment-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ai-comment-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-comment-menu::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 3px;
+}
+
+.ai-comment-menu::-webkit-scrollbar-thumb:hover {
+  background: #9e9e9e;
 }
 
 .ai-result {

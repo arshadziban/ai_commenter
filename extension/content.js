@@ -52,75 +52,63 @@ function createAIButton() {
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    min-width: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+    min-width: 160px;
     z-index: 99999;
     border: 1px solid #e0e0e0;
     visibility: hidden;
   `;
 
-  const professionalBtn = document.createElement("button");
-  professionalBtn.innerHTML = "Professional";
-  professionalBtn.style.cssText = `
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    background: white;
-    border: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    transition: background 0.2s;
-  `;
-  professionalBtn.onmouseover = () => professionalBtn.style.background = "#f0f4f8";
-  professionalBtn.onmouseout = () => professionalBtn.style.background = "white";
-  
-  const handleProfessionalClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    console.log("Professional button clicked!");
-    menu.style.display = "none";
-    menu.style.visibility = "hidden";
-    handleAIButtonClick("professional");
-  };
-  professionalBtn.onclick = handleProfessionalClick;
-  professionalBtn.onmousedown = handleProfessionalClick;
+  const commentTypes = [
+    { id: "professional", label: "Professional" },
+    { id: "friendly", label: "Friendly" },
+    { id: "collaboration", label: "Collaboration" },
+    { id: "insightful", label: "Insightful" },
+    { id: "curious", label: "Curious" },
+    { id: "supportive", label: "Supportive" },
+    { id: "constructive", label: "Constructive" },
+    { id: "enthusiastic", label: "Enthusiastic" },
+    { id: "witty", label: "Witty" },
+    { id: "empathetic", label: "Empathetic" },
+    { id: "thoughtful", label: "Thoughtful" },
+    { id: "minimal", label: "Minimal" },
+  ];
 
-  const friendlyBtn = document.createElement("button");
-  friendlyBtn.innerHTML = "Friendly";
-  friendlyBtn.style.cssText = `
-    display: block;
-    width: 100%;
-    padding: 10px 14px;
-    background: white;
-    border: none;
-    border-top: 1px solid #f0f0f0;
-    text-align: left;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    transition: background 0.2s;
-  `;
-  friendlyBtn.onmouseover = () => friendlyBtn.style.background = "#f0f4f8";
-  friendlyBtn.onmouseout = () => friendlyBtn.style.background = "white";
-  
-  const handleFriendlyClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    console.log("Friendly button clicked!");
-    menu.style.display = "none";
-    menu.style.visibility = "hidden";
-    handleAIButtonClick("friendly");
-  };
-  friendlyBtn.onclick = handleFriendlyClick;
-  friendlyBtn.onmousedown = handleFriendlyClick;
+  commentTypes.forEach((commentType, index) => {
+    const btn = document.createElement("button");
+    btn.innerHTML = `${commentType.label}`;
+    btn.style.cssText = `
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      background: white;
+      border: none;
+      ${index > 0 ? 'border-top: 1px solid #f0f0f0;' : ''}
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      transition: background 0.2s;
+    `;
+    btn.onmouseover = () => btn.style.background = "#f0f4f8";
+    btn.onmouseout = () => btn.style.background = "white";
+    
+    const handleClick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      console.log(`${commentType.label} button clicked!`);
+      menu.style.display = "none";
+      menu.style.visibility = "hidden";
+      handleAIButtonClick(commentType.id);
+    };
+    btn.onclick = handleClick;
+    btn.onmousedown = handleClick;
 
-  menu.appendChild(professionalBtn);
-  menu.appendChild(friendlyBtn);
+    menu.appendChild(btn);
+  });
 
   let hoverTimeout;
   let menuVisible = false;
@@ -588,14 +576,23 @@ function showLoading(post, type) {
   
   let loader = document.createElement("div");
   loader.className = "ai-loader";
-  let label;
-  if (type === "professional") {
-    label = "Professional";
-  } else if (type === "friendly") {
-    label = "Friendly";
-  } else {
-    label = "AI";
-  }
+  
+  const typeLabels = {
+    professional: "Professional",
+    friendly: "Friendly",
+    collaboration: "Collaboration",
+    insightful: "Insightful",
+    curious: "Curious",
+    supportive: "Supportive",
+    constructive: "Constructive",
+    enthusiastic: "Enthusiastic",
+    witty: "Witty",
+    empathetic: "Empathetic",
+    thoughtful: "Thoughtful",
+    minimal: "Minimal",
+  };
+  
+  const label = typeLabels[type] || "AI";
   loader.innerText = `Generating ${label} comment...`;
   post.appendChild(loader);
 }
@@ -620,17 +617,23 @@ function showComment(post, comment, type) {
   const container = document.createElement("div");
   container.className = "ai-result";
 
-  let label, color;
-  if (type === "professional") {
-    label = "Professional";
-    color = "#0a66c2";
-  } else if (type === "friendly") {
-    label = "Friendly";
-    color = "#057642";
-  } else {
-    label = "AI";
-    color = "#0a66c2";
-  }
+  const typeConfig = {
+    professional: { label: "Professional", color: "#0a66c2" },
+    friendly: { label: "Friendly", color: "#057642" },
+    collaboration: { label: "Collaboration", color: "#0a66c2" },
+    insightful: { label: "Insightful", color: "#9c27b0" },
+    curious: { label: "Curious", color: "#f57c00" },
+    supportive: { label: "Supportive", color: "#4caf50" },
+    constructive: { label: "Constructive", color: "#ff9800" },
+    enthusiastic: { label: "Enthusiastic", color: "#e91e63" },
+    witty: { label: "Witty", color: "#00bcd4" },
+    empathetic: { label: "Empathetic", color: "#e74c3c" },
+    thoughtful: { label: "Thoughtful", color: "#6c63ff" },
+    minimal: { label: "Minimal", color: "#ff6b6b" },
+  };
+
+  const config = typeConfig[type] || { label: "AI", color: "#0a66c2" };
+  const { label, color } = config;
 
   const section = document.createElement("div");
   section.className = "ai-comment-section";
@@ -644,8 +647,17 @@ function showComment(post, comment, type) {
     color: ${color};
   `;
   
+  const titleContainer = document.createElement("div");
+  titleContainer.style.cssText = `
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  `;
+  
   const titleSpan = document.createElement("strong");
   titleSpan.innerText = label;
+  
+  titleContainer.appendChild(titleSpan);
   
   const iconsContainer = document.createElement("div");
   iconsContainer.style.cssText = `
@@ -719,7 +731,7 @@ function showComment(post, comment, type) {
   iconsContainer.appendChild(regenerateBtn);
   iconsContainer.appendChild(closeBtn);
   
-  header.appendChild(titleSpan);
+  header.appendChild(titleContainer);
   header.appendChild(iconsContainer);
   section.appendChild(header);
 
