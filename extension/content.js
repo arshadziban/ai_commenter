@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:3000/generate";
+//const BACKEND_URL = "http://localhost:3000/generate";
 let currentCommentBox = null;
 let currentPost = null;
 let aiButton = null;
@@ -202,17 +202,17 @@ function positionButton(commentBox, button) {
 function findPostElement(element) {
   console.log("Finding post element from:", element);
   
-  // Try multiple selectors for different platforms
+  // Try multiple selectors for different platforms - ordered by specificity
   const selectors = [
-    ".feed-shared-update-v2",           // LinkedIn main feed post
-    ".feed-shared-update-v2__content",  // LinkedIn post content
+    ".occludable-update",                // LinkedIn update container (newest)
+    ".feed-shared-update-v2",            // LinkedIn main feed post
+    ".feed-shared-update",               // LinkedIn variant
+    ".feed-shared-update-v2__content",   // LinkedIn post content
     "article",                           // Generic article
     "[role='article']",                  // ARIA article
     ".post",                             // Generic post
-    "[data-testid*='post']",            // Facebook/Twitter style
+    "[data-testid*='post']",             // Facebook/Twitter style
     ".story",                            // Story container
-    ".feed-shared-update",               // LinkedIn variant
-    ".occludable-update",                // LinkedIn update container
     "[data-urn]",                        // LinkedIn URN elements
   ];
   
@@ -235,9 +235,9 @@ function findPostElement(element) {
     // Check if this parent has substantial content and looks like a post
     const textContent = parent.innerText || parent.textContent || "";
     const hasEnoughContent = textContent.length > 100;
-    const hasPostLikeStructure = parent.querySelector('.feed-shared-social-action-bar, .social-details-social-counts, [aria-label*="Like"], [aria-label*="Comment"]');
+    const hasPostLikeStructure = parent.querySelector('.feed-shared-social-action-bar, .social-details-social-counts, [aria-label*="Like"], [aria-label*="Comment"], button[aria-label*="reaction"]');
     
-    if (hasEnoughContent || hasPostLikeStructure) {
+    if (hasEnoughContent && hasPostLikeStructure) {
       console.log("Found parent with content at level", i, parent);
       return parent;
     }
@@ -444,48 +444,61 @@ function getPostText(postElement) {
   // First, try to exclude comment sections and buttons
   const clone = postElement.cloneNode(true);
   
-  // Remove comment sections, buttons, and other noise
+  // Remove comment sections, social action bar, and other noise - but NOT text buttons
   const elementsToRemove = clone.querySelectorAll(
-    '.comments-comment-box, .comments-comment-list, .comments-comment-item, button, .social-details-social-counts, [role="button"], input, textarea, nav, header, footer'
+    '.comments-comment-box, .comments-comment-list, .comments-comment-item, .feed-shared-social-action-bar, .social-details-social-counts, [role="toolbar"], input, textarea, nav'
   );
   elementsToRemove.forEach(el => el.remove());
   
-  // Try specific selectors first
+  // Try specific selectors first - prioritize content containers
   const selectors = [
     ".feed-shared-update-v2__description",   // LinkedIn main text
+    ".update-components-text--with-inline-content",  // LinkedIn newer version
+    ".update-components-text",               // LinkedIn update
     ".feed-shared-text",                     // LinkedIn alt
     ".break-words",                          // LinkedIn
     "[data-testid*='post-text']",           // Facebook/Twitter
     ".post-content",                         // Generic
-    ".update-components-text",               // LinkedIn update
     ".feed-shared-inline-show-more-text",   // LinkedIn show more text
-    "[dir='ltr']",                           // LinkedIn text direction
+    "span[dir='ltr']",                       // LinkedIn text spans
   ];
   
   for (const selector of selectors) {
     const element = clone.querySelector(selector);
-    if (element && element.innerText.trim().length > 20) {
-      const text = element.innerText.trim();
-      console.log("Found text with selector:", selector, "Text:", text.substring(0, 100));
-      return text;
+    if (element) {
+      const text = element.innerText?.trim() || element.textContent?.trim() || "";
+      if (text.length > 20) {
+        console.log("Found text with selector:", selector, "Text:", text.substring(0, 100));
+        return text;
+      }
     }
   }
   
-  // Get all text but try to filter out UI elements
-  let allText = clone.innerText || clone.textContent || "";
-  allText = allText.trim();
+  // Try to find the main content div and extract text from it
+  const mainContentDivs = clone.querySelectorAll('div[class*="content"], div[class*="text"], article, div[role="article"]');
+  for (const div of mainContentDivs) {
+    // Get text but exclude action buttons and UI elements
+    const tempClone = div.cloneNode(true);
+    const buttons = tempClone.querySelectorAll('button, [role="button"], .feed-shared-social-action-bar, .social-details-social-counts');
+    buttons.forEach(btn => btn.remove());
+    
+    const text = (tempClone.innerText || tempClone.textContent || "").trim();
+    if (text.length > 20) {
+      console.log("Found text from content div, length:", text.length);
+      return text.replace(/\s+/g, ' ').trim();
+    }
+  }
   
-  // Clean up the text - remove multiple spaces and newlines
-  allText = allText.replace(/\s+/g, ' ').trim();
-  
-  // If we got some text, use it
+  // Get all text from the entire post element
+  const allText = (clone.innerText || clone.textContent || "").trim();
   if (allText.length > 20) {
-    console.log("Using all text from post:", allText.substring(0, 100));
-    return allText;
+    const cleaned = allText.replace(/\s+/g, ' ').trim();
+    console.log("Using all text from post:", cleaned.substring(0, 100));
+    return cleaned;
   }
   
   // Last resort: get text from original element
-  const originalText = postElement.innerText || postElement.textContent || "";
+  const originalText = (postElement.innerText || postElement.textContent || "").trim();
   const cleanedOriginal = originalText.replace(/\s+/g, ' ').trim();
   console.log("Using original element text:", cleanedOriginal.substring(0, 100));
   return cleanedOriginal;
