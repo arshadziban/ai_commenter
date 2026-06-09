@@ -30,3 +30,7 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Old/backup files
+server_old.js
+extension/content.js

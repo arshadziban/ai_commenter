@@ -1,5 +1,5 @@
 //const BACKEND_URL = "http://localhost:3000/generate";
-
+const BACKEND_URL = "https://ai-commenter-2cya.onrender.com/generate";
 let currentCommentBox = null;
 let currentPost = null;
 let aiButton = null;
