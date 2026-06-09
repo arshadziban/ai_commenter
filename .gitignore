@@ -33,3 +33,4 @@ logs/
 
 # Old/backup files
 server_old.js
+extension/content.js
