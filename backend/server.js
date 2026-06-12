@@ -67,7 +67,7 @@ const REPLY_STYLES = {
   thank_you: (postText, commentText, parentCommentText, lang) =>
     `${buildReplyContext(postText, commentText, parentCommentText)}\n\nWrite ONE genuine thank-you reply (MAX 15 words). Express real gratitude, not just a generic thanks. ${lang} Return ONLY the reply text.`,
   welcome: (postText, commentText, parentCommentText, lang) =>
-    `${buildReplyContext(postText, commentText, parentCommentText)}\n\nWrite ONE warm, welcoming reply (MAX 15 words). Make the person feel genuinely received and valued. ${lang} Return ONLY the reply text.`,
+    `${buildReplyContext(postText, commentText, parentCommentText)}\n\nWrite ONE warm "you're welcome" reply (MAX 15 words). The person has thanked you — respond graciously and make them feel it was no trouble. Do NOT say "thank you". ${lang} Return ONLY the reply text.`,
   question: (postText, commentText, parentCommentText, lang) =>
     `${buildReplyContext(postText, commentText, parentCommentText)}\n\nWrite ONE curious follow-up question (MAX 20 words) inspired by the post: "${postText}". The answer must NOT already be in the post — ask something the author hasn't mentioned yet, so they are compelled to reply and share more. ${lang} Return ONLY the question text.`,
   agree: (postText, commentText, parentCommentText, lang) =>
